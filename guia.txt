@@ -1,0 +1,31 @@
+    Si la palabra coincide exactamente ( Todas la letras son TTTTT ) la computadora debe indicarle al usuario que gano y salir.
+    
+    El string de calificación debe estar alineado verticalmente contra el string de adivinación.
+    
+    alocha
+    
+    TVTT-
+    
+    Consideraciones para la implementación de esta primera sección:
+    
+    - Averiguar como pasar argumentos a un programa.
+    - Crear un archivo mediante el hmake.  ghc --make Main.hs
+    - Para las palabras del txt, deberíamos almacenarlas en un una lista.
+    - Como solicitar input del usuario y como manipularlo.
+    - Como cambiar una palabra a ser toda upperCase o lowerCase.
+    - Como comparar un string contra otro.
+    - Como tomar una posición aleatoriamente de una lista.
+    - Como disparar errores, sin terminar el programa.
+    - Como Re solicitar input del usuario luego de un error o al siguiente turno.
+
+
+
+
+
+
+    Idea Ana:
+    -Ver tamaño de la lista
+    -Hacer random de esa cantidad
+    -Buscar la posicion random de la lista
+    -Separar las letras como elementos
+    -Verificar letra y posicion (T primero, V despues.)

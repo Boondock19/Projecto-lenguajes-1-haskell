@@ -2,10 +2,6 @@ import Data.List
 import System.Environment
 
 
-
-                
-printInt x = print            
-
 main = do
     args <- getArgs
     progName <- getProgName
@@ -16,14 +12,27 @@ main = do
     fileContent <- readFile "Palabras.txt"
     -- Lista de todas las palabras.
     let listOfWords = lines fileContent
-    print listOfWords
-    let turno = 1 
-    sumTurno turno
+    --print(listOfWords)
+
+    -- Lista de puntos de las palabras
+    let word = "12345"
+    let ver = "TTTTT"
+    let cont = 0
+    putStrLn  "JAJAJA"
+
+    -- salir :: Integer -> String
+    -- salir n = contador n
+    --     where
+    --         contador n
+    --             | n == 6 = "Perdiste"
+    --             | otherwise "Sigue"
     
-   
+
+    -- if word == "CINCO" then do
+    --     print(ver)
+    -- else do
+    --     let cont = cont + 1
+    --     main
     
 
-
-
-
-
+    
