@@ -1,6 +1,24 @@
 import Data.List
 import System.Environment
 
+initMenteMaestra :: Int -> String -> IO ()
+initMenteMaestra currentTurn randomWord = do
+    if currentTurn > 6 then putStrLn ("Haz perdido , la palabra era " ++ randomWord )
+    else do
+         putStrLn "Por favor ingresa una palabra: "
+         x <- getLine
+
+          
+         if  length x /= 5  
+            then do
+                putStrLn "Has ingresado una palabra invalida"
+                initMenteMaestra currentTurn randomWord
+         else if x == randomWord 
+            then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
+         else do
+            putStrLn "Haz ingresado una palabra valida!"
+            initMenteMaestra (currentTurn + 1 ) randomWord
+
 
 main = do
     args <- getArgs
@@ -18,7 +36,9 @@ main = do
     let word = "12345"
     let ver = "TTTTT"
     let cont = 0
-    putStrLn  "JAJAJA"
+    
+
+    initMenteMaestra 1 "ESKER"
 
     -- salir :: Integer -> String
     -- salir n = contador n
