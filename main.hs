@@ -1,6 +1,7 @@
 import Data.List
 import System.Environment
 import Data.List.Split
+import Data.Char
 
 contains :: Eq a => a -> [a] -> Bool
 contains = \elem -> \myList ->
@@ -9,6 +10,10 @@ contains = \elem -> \myList ->
     x:xs | x == elem -> True 
     _:xs -> contains elem xs
 
+mayuscula :: String -> String
+mayuscula []     = []
+mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
+    
 
 initMenteMaestra :: Int -> String -> IO ()
 initMenteMaestra currentTurn randomWord = do
@@ -16,15 +21,16 @@ initMenteMaestra currentTurn randomWord = do
     else do
         putStrLn "Por favor ingresa una palabra: "
         x <- getLine
-        let y = splitOn "" x
-        let z = drop 1 y
+        let x2 = mayuscula x
+        let x3 = splitOn "" x2
+        let lchar = drop 1 x3
           
         if  length x /= 5  
             then do
                 putStrLn "Has ingresado una palabra invalida"
                 initMenteMaestra currentTurn randomWord
-        else if contains "Ñ" z || contains "ñ" z
-            then do
+        else if contains "Ñ" lchar
+           then do
                 putStrLn "Has ingresado una palabra invalida"
                 initMenteMaestra currentTurn randomWord 
         else if x == randomWord 
