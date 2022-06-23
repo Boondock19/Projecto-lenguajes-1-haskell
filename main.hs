@@ -6,11 +6,11 @@ import Data.List.Split
 import Data.Char
 
 contains :: Eq a => a -> [a] -> Bool
-contains = \elem -> \myList ->
-  case myList of
-    [] -> False 
-    x:xs | x == elem -> True 
-    _:xs -> contains elem xs
+contains elem myList
+  = case myList of
+      [] -> False
+      x : xs | x == elem -> True
+      _ : xs -> contains elem xs
 
 mayuscula :: String -> String
 mayuscula []     = []
@@ -31,7 +31,7 @@ initMenteMaestra currentTurn randomWord = do
             then do
                 putStrLn "Has ingresado una palabra invalida"
                 initMenteMaestra currentTurn randomWord
-        else if x == randomWord 
+        else if x2 == randomWord 
             then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
         else do
             putStrLn "Haz ingresado una palabra valida!"
