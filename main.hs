@@ -31,9 +31,14 @@ revisar num x randomWord lista = do
                     let newLista =  lista ++ toro 
                     revisar (num+1) x randomWord newLista
             else do 
-                
-                let newLista =  lista ++ guion 
-                revisar (num+1) x randomWord newLista
+                if contains comp1 randomWord
+                    then do
+                        let newLista =  lista ++ vaca 
+                        revisar (num+1) x randomWord newLista
+                else 
+                    do
+                        let newLista =  lista ++ guion 
+                        revisar (num+1) x randomWord newLista
     else do
         lista
 
@@ -57,6 +62,7 @@ initMenteMaestra currentTurn randomWord = do
         else if x2 == randomWord 
             then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
         else do
+
             putStrLn (revisar 0 lchar lrW [])
             initMenteMaestra (currentTurn + 1 ) randomWord
 
