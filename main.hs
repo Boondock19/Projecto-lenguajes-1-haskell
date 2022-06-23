@@ -1,5 +1,9 @@
 import Data.List
 import System.Environment
+import System.Random
+
+
+
 
 initMenteMaestra :: Int -> String -> IO ()
 initMenteMaestra currentTurn randomWord = do
@@ -30,6 +34,13 @@ main = do
     fileContent <- readFile "Palabras.txt"
     -- Lista de todas las palabras.
     let listOfWords = lines fileContent
+    let sizeOfList = length listOfWords
+    -- Obtenemos una palabra aleatoria de la lista.
+    index <- randomRIO (0, sizeOfList - 1)
+    let randomWord =  listOfWords !! index
+    
+    print ("La palabra es : " ++ randomWord ++ " con index : " ++ show index)
+
     --print(listOfWords)
 
     -- Lista de puntos de las palabras
@@ -38,7 +49,7 @@ main = do
     let cont = 0
     
 
-    initMenteMaestra 1 "ESKER"
+    initMenteMaestra 1 randomWord
 
     -- salir :: Integer -> String
     -- salir n = contador n
