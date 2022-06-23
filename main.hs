@@ -21,17 +21,19 @@ revisar num x randomWord lista = do
     let toro = ['T']
     let guion = ['-']
     let vaca = ['V']
-    if num <= 5
+    if num < 5
         then do
             let comp1 = x !! num
             let comp2 = randomWord !! num
+            
             if comp1 == comp2 
                 then do
-                    toro++lista
-                    revisar (num+1) x randomWord lista
+                    let newLista =  lista ++ toro 
+                    revisar (num+1) x randomWord newLista
             else do 
-                guion++lista
-                revisar (num+1) x randomWord lista
+                
+                let newLista =  lista ++ guion 
+                revisar (num+1) x randomWord newLista
     else do
         lista
 
@@ -55,8 +57,7 @@ initMenteMaestra currentTurn randomWord = do
         else if x2 == randomWord 
             then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
         else do
-            print(revisar 0 lchar lrW [])
-            putStrLn "Haz ingresado una palabra valida!"
+            putStrLn (revisar 0 lchar lrW [])
             initMenteMaestra (currentTurn + 1 ) randomWord
 
 
