@@ -16,6 +16,24 @@ mayuscula :: String -> String
 mayuscula []     = []
 mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
     
+revisar :: Int -> [[Char]] -> [[Char]] -> [Char] -> [Char]
+revisar num x randomWord lista = do
+    let toro = ['T']
+    let guion = ['-']
+    let vaca = ['V']
+    if num <= 5
+        then do
+            let comp1 = x !! num
+            let comp2 = randomWord !! num
+            if comp1 == comp2 
+                then do
+                    toro++lista
+                    revisar (num+1) x randomWord lista
+            else do 
+                guion++lista
+                revisar (num+1) x randomWord lista
+    else do
+        lista
 
 initMenteMaestra :: Int -> String -> IO ()
 initMenteMaestra currentTurn randomWord = do
@@ -26,6 +44,9 @@ initMenteMaestra currentTurn randomWord = do
         let x2 = mayuscula x
         let x3 = splitOn "" x2
         let lchar = drop 1 x3
+        let x4 = splitOn "" randomWord
+        let lrW = drop 1 x4
+        --let respuesta [] = []
           
         if  length x /= 5 || contains "Ñ" lchar
             then do
@@ -34,6 +55,7 @@ initMenteMaestra currentTurn randomWord = do
         else if x2 == randomWord 
             then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
         else do
+            print(revisar 0 lchar lrW [])
             putStrLn "Haz ingresado una palabra valida!"
             initMenteMaestra (currentTurn + 1 ) randomWord
 
