@@ -15,9 +15,27 @@ contains elem myList
 mayuscula :: String -> String
 mayuscula []     = []
 mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
+
+revisionV:: Int -> [[Char]] -> [[Char]] -> [Char] -> [Char]
+revisionV num userWord listOfBulls stringEvaluation = do
+    if num < 5 
+        then do
+            let charInUserWord = userWord !! num
+            let charInStringEvaluation = [stringEvaluation !! num]
+            if  "V" == charInStringEvaluation && contains charInUserWord listOfBulls
+                then do
+                    let (x,_:ys) = splitAt num stringEvaluation
+                    let stringArreglado = x ++ "-" ++ ys
+                    revisionV (num+1) userWord listOfBulls stringArreglado
+
+            else revisionV (num+1) userWord listOfBulls stringEvaluation
+    else do
+        stringEvaluation
     
-revisar :: Int -> [[Char]] -> [[Char]] -> [Char] -> [Char]
-revisar num x randomWord lista = do
+
+    
+revisar :: Int -> [[Char]] -> [[Char]] -> [Char] -> [[Char]] -> [Char]
+revisar num x randomWord lista listOfBulls= do
     let toro = ['T']
     let guion = ['-']
     let vaca = ['V']
@@ -28,19 +46,24 @@ revisar num x randomWord lista = do
             
             if comp1 == comp2 
                 then do
-                    let newLista =  lista ++ toro 
-                    revisar (num+1) x randomWord newLista
+                    let newLista =  lista ++ toro
+                    let newListOfBulls = listOfBulls ++ [comp1] 
+                    revisar (num+1) x randomWord newLista newListOfBulls
             else do 
-                if contains comp1 randomWord
+                if  contains comp1 randomWord && not (contains comp1 listOfBulls)
                     then do
                         let newLista =  lista ++ vaca 
-                        revisar (num+1) x randomWord newLista
+                        revisar (num+1) x randomWord newLista listOfBulls
+                        
+                       
                 else 
                     do
                         let newLista =  lista ++ guion 
-                        revisar (num+1) x randomWord newLista
+                        revisar (num+1) x randomWord newLista listOfBulls
+                        
     else do
-        lista
+        revisionV 0 x listOfBulls lista
+        
 
 initMenteMaestra :: Int -> String -> IO ()
 initMenteMaestra currentTurn randomWord = do
@@ -62,8 +85,13 @@ initMenteMaestra currentTurn randomWord = do
         else if x2 == randomWord 
             then putStrLn ("Haz ganado!, la palabra era " ++ randomWord )
         else do
-
-            putStrLn (revisar 0 lchar lrW [])
+            
+            putStrLn (revisar 0 lchar lrW [] [[]])
+            -- let (x,_:ys) = splitAt 1 (revisar 0 lchar lrW [] [[]])
+            -- putStrLn ("Este es x: " ++ x)
+            -- putStrLn ("Este es ys: " ++ ys)
+            -- let stringArrglado = x ++ "-" ++ ys
+            -- putStrLn ("Este es el string arreglado: " ++ stringArrglado)
             initMenteMaestra (currentTurn + 1 ) randomWord
 
 
@@ -92,7 +120,7 @@ main = do
     let cont = 0
     
 
-    initMenteMaestra 1 randomWord
+    initMenteMaestra 1 "PERDI"
 
     -- salir :: Integer -> String
     -- salir n = contador n
