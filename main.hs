@@ -1,7 +1,7 @@
 import Data.List
 import System.Environment
 import System.Random
-
+import Data.List(sort)
 import Data.List.Split
 import Data.Char
 
@@ -84,6 +84,40 @@ filterByVacas listOfTuples num sizeOfList listOfWords = do
       listOfWords
 
     
+asignarPuntaje :: [Char] -> Float
+asignarPuntaje letra = do
+    if (letra == ['A']) || (letra == ['E'])
+        then do
+            0.1
+    else if (letra == ['I']) || (letra == ['N']) || (letra == ['O']) || (letra == ['R']) || (letra == ['S'])
+        then 0.2
+    else if (letra == ['D']) || (letra == ['L'] )|| (letra == ['C']) || (letra == ['T']) || (letra == ['U'])
+        then 0.3
+    else if (letra == ['B']) || (letra == ['G']) || (letra == ['M']) || (letra == ['P'])
+        then 0.5
+    else if (letra == ['F']) || (letra == ['H']) || (letra == ['Q']) || (letra == ['V']) || (letra == ['Y'])
+        then 0.8
+    else do 1.0
+
+obtenerPuntajeW :: Int -> [[Char]] -> ([[Char]],Float) -> ([[Char]],Float)
+obtenerPuntajeW pos palabra puntaje = do 
+    if pos < 5
+        then do 
+            let oldPuntaje = snd puntaje
+            let newPuntaje = (palabra, oldPuntaje + asignarPuntaje (palabra !! pos))
+            obtenerPuntajeW (pos + 1) palabra newPuntaje
+    else do
+        puntaje
+
+obtenerPuntajeTot :: Int -> Int -> [[[Char]]] -> [([[Char]],Float)] -> [([[Char]],Float)]
+obtenerPuntajeTot pos size listaPalabras listaPuntajes = do
+    if pos < size 
+        then do 
+            let obtener = obtenerPuntajeW 0 (listaPalabras !! pos) (listaPalabras !! pos, 0.0)
+            let newLista = listaPuntajes ++ [obtener]
+            obtenerPuntajeTot (pos + 1) size listaPalabras newLista
+    else do
+        listaPuntajes
 
 
 revisarToros :: Int -> [[Char]] -> [[Char]] -> [([Char],Int)] -> [([Char],Int)]
@@ -248,6 +282,13 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         print ("FUNCINA CO;O")
         let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
         print (filteredListVacas)
+        let tamañoPenultima = length filteredListVacas 
+        let puntajesAntes = obtenerPuntajeTot 0 tamañoPenultima filteredListVacas []
+        print (puntajesAntes)
+        let ordenadas = sortOn snd puntajesAntes
+        print (ordenadas)
+        let tenWords = take 10 ordenadas
+        print (tenWords)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
