@@ -63,8 +63,9 @@ filterByToros listOfTuples num sizeOfList listOfWords = do
     else do
        listOfWords
 
-filterByVacas ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] -> IO()
+filterByVacas ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] ->  [[[Char]]]
 filterByVacas listOfTuples num sizeOfList listOfWords = do
+   
     if num < sizeOfList  then do
         
         let element = listOfTuples !! num
@@ -72,6 +73,7 @@ filterByVacas listOfTuples num sizeOfList listOfWords = do
         let char =  fst  element
         let position =  snd  element
         let filterListContains = filter (\x -> contains char x) listOfWords
+        
    
         let filterList = filter (\x -> x !! position /= char ) filterListContains
        
@@ -79,7 +81,7 @@ filterByVacas listOfTuples num sizeOfList listOfWords = do
         filterByVacas listOfTuples (num+1) sizeOfList filterList 
        
     else do
-      print "SADASDSDASD"
+      listOfWords
 
     
 
@@ -243,7 +245,9 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let splitAllWordsDroped = drop 1 splitedWords
         -- print splitedWords
         let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
+        print ("FUNCINA CO;O")
         let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
+        print (filteredListVacas)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
