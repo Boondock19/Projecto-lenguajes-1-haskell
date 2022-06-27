@@ -5,6 +5,11 @@ import System.Random
 import Data.List.Split
 import Data.Char
 
+
+
+
+    
+
 {--
     Funcion que verifica si un string contiene el caracter especificado
 
@@ -22,9 +27,90 @@ contains elem myList
     en mayusculas.
 --}
 
+splitAllWords :: [String] -> Int ->  Int -> [[[Char]]] -> [[[Char]]]
+splitAllWords allWords position size splitWords = do
+    if position == size then do
+        splitWords
+    else do
+        let word = allWords !! position
+        let x3 = splitOn "" word
+        let lchar = drop 1 x3
+        let newSplitWords = splitWords ++ [lchar]
+        splitAllWords allWords (position + 1) size newSplitWords 
+
 mayuscula :: String -> String
 mayuscula []     = []
 mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
+
+-- customFilter :: ([[Char]] -> Bool) -> [a] -> [a]
+-- customFilter charInWord char = charInWord == char
+
+filterByToros ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] -> [[[Char]]]
+filterByToros listOfTuples num sizeOfList listOfWords = do
+   
+    if num < sizeOfList  then do
+        
+        let element = listOfTuples !! num
+        
+        let char =  fst  element
+        let position =  snd  element
+        
+        let filterList = filter (\x -> x !! position == char) listOfWords
+       
+        
+        filterByToros listOfTuples (num+1) sizeOfList filterList 
+       
+    else do
+       listOfWords
+
+filterByVacas ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] -> IO()
+filterByVacas listOfTuples num sizeOfList listOfWords = do
+    if num < sizeOfList  then do
+        
+        let element = listOfTuples !! num
+        
+        let char =  fst  element
+        let position =  snd  element
+        let filterListContains = filter (\x -> contains char x) listOfWords
+   
+        let filterList = filter (\x -> x !! position /= char ) filterListContains
+       
+        
+        filterByVacas listOfTuples (num+1) sizeOfList filterList 
+       
+    else do
+      print "SADASDSDASD"
+
+    
+
+
+revisarToros :: Int -> [[Char]] -> [[Char]] -> [([Char],Int)] -> [([Char],Int)]
+revisarToros num randomWord eval listOfTuples = do
+    if num < 5 
+        then do 
+            let t = eval !! num
+            if t == "T"
+                then do 
+                    let tupla = (randomWord !! num, num)
+                    let newList = listOfTuples ++ [tupla]
+                    revisarToros (num+1) randomWord eval newList
+                else do revisarToros (num+1) randomWord eval listOfTuples
+    else do 
+        listOfTuples
+
+revisarVacas :: Int -> [[Char]] -> [[Char]] -> [([Char],Int)] -> [([Char],Int)]
+revisarVacas num randomWord eval listOfTuples = do
+    if num < 5 
+        then do 
+            let t = eval !! num
+            if t == "V"
+                then do 
+                    let tupla = (randomWord !! num, num)
+                    let newList = listOfTuples ++ [tupla]
+                    revisarVacas (num+1) randomWord eval newList
+                else do revisarVacas (num+1) randomWord eval listOfTuples
+    else do 
+        listOfTuples
 
 {--
     Funcion que recibe la palabra ingresada por el usuarios
@@ -130,6 +216,47 @@ initMenteMaestra currentTurn randomWord = do
             initMenteMaestra (currentTurn + 1 ) randomWord
 
 
+initDecifrador :: Int -> String -> [String] -> Int -> IO ()
+initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
+    if currentTurn > 6 then putStrLn ("Haz perdido , la palabra era " ++ randomWord )
+
+    else do
+        print randomWord
+        putStrLn "Evaluacion: "
+        x <- getLine
+        let x1 = splitOn "" x
+        let lchar = drop 1 x1
+        let lrW = drop 1 (splitOn "" randomWord)
+
+        let listOfToros =  revisarToros 0 lrW lchar []
+        let sizeOfList = length listOfToros
+
+        let listOfVacas =  revisarVacas 0 lrW lchar []
+        let sizeOfListVacas = length listOfVacas
+
+        print listOfVacas
+
+
+
+        -- print sizeOfList
+        let splitedWords = splitAllWords listOfWords 0 sizeOfListOfWords [[[]]]
+        let splitAllWordsDroped = drop 1 splitedWords
+        -- print splitedWords
+        let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
+        let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
+        initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
+
+
+
+
+
+
+    
+
+
+
+
+
 main = do
 
     args <- getArgs
@@ -151,13 +278,24 @@ main = do
     
     print ("La palabra es : " ++ randomWord ++ " con index : " ++ show index)
 
+  
+    
+
     -- Lista de puntos de las palabras
     let word = "12345"
     let ver = "TTTTT"
     let cont = 0
+
+    let randomWordSplited = splitOn "" randomWord
+    print randomWordSplited
+    let listOfChars = [randomWordSplited, ["1", "2", "3", "4", "5"]]
+    print listOfChars
+    print (listOfChars !! 1)
+    
+    initDecifrador 1 randomWord listOfWords sizeOfList
     
 
-    initMenteMaestra 1 "PERDI"
+    -- initMenteMaestra 1 randomWord
 
     -- salir :: Integer -> String
     -- salir n = contador n
