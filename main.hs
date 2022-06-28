@@ -23,8 +23,9 @@ contains elem myList
       _ : xs -> contains elem xs
 
 {--
-    Funcion que transforma todas las letras de un string
-    en mayusculas.
+    Funcion que separa todas las palabras de la lista
+    grande en caracteres, para poder comparar caracter
+    por caracter.
 --}
 
 splitAllWords :: [String] -> Int ->  Int -> [[[Char]]] -> [[[Char]]]
@@ -38,12 +39,23 @@ splitAllWords allWords position size splitWords = do
         let newSplitWords = splitWords ++ [lchar]
         splitAllWords allWords (position + 1) size newSplitWords 
 
+{--
+    Funcion que transforma todas las letras de un string
+    en mayusculas.
+--}
 mayuscula :: String -> String
 mayuscula []     = []
 mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
 
 -- customFilter :: ([[Char]] -> Bool) -> [a] -> [a]
 -- customFilter charInWord char = charInWord == char
+
+{--
+    Funcion que filtra la lista de todas las palabras, por
+    aquellas que posean las letras (Aquellas con T) que 
+    componen al String de evaluacion, en la misma posicion . 
+    Y retorna un array con las palabras que cumplen con la condicion.
+--}
 
 filterByToros ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] -> [[[Char]]]
 filterByToros listOfTuples num sizeOfList listOfWords = do
@@ -62,6 +74,14 @@ filterByToros listOfTuples num sizeOfList listOfWords = do
        
     else do
        listOfWords
+
+{--
+    Funcion que filtra la lista de todas las palabras, por
+    aquellas que posean las letras (Aquellas con V) que 
+    componen al String de evaluacion, en diferente posicion . 
+    Y retorna un array con las palabras que cumplen con la condicion.
+--}
+
 
 filterByVacas ::  [([Char],Int)] -> Int -> Int -> [[[Char]]] ->  [[[Char]]]
 filterByVacas listOfTuples num sizeOfList listOfWords = do
@@ -83,7 +103,12 @@ filterByVacas listOfTuples num sizeOfList listOfWords = do
     else do
       listOfWords
 
-    
+{--
+    Funcion que retorna el valor de evaluacion segun la
+    ponderacion especificada en el PDF a partir de una letra. 
+--}
+
+
 asignarPuntaje :: [Char] -> Float
 asignarPuntaje letra = do
     if (letra == ['A']) || (letra == ['E'])
@@ -99,6 +124,12 @@ asignarPuntaje letra = do
         then 0.8
     else do 1.0
 
+
+{--
+    Funcion que retorna una tupla con un array de Chars
+    y su respectiva evaluacion segun el puntaje. 
+--}
+
 obtenerPuntajeW :: Int -> [[Char]] -> ([[Char]],Float) -> ([[Char]],Float)
 obtenerPuntajeW pos palabra puntaje = do 
     if pos < 5
@@ -108,6 +139,11 @@ obtenerPuntajeW pos palabra puntaje = do
             obtenerPuntajeW (pos + 1) palabra newPuntaje
     else do
         puntaje
+
+{--
+    Funcion que retorna una lista de tuplas con arrays de Chars
+    y su respectiva evaluacion segun el puntaje. 
+--}
 
 obtenerPuntajeTot :: Int -> Int -> [[[Char]]] -> [([[Char]],Float)] -> [([[Char]],Float)]
 obtenerPuntajeTot pos size listaPalabras listaPuntajes = do
