@@ -423,15 +423,11 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
 
 
 main = do
-
-    args <- getArgs
-    progName <- getProgName
-    putStrLn "The arguments are :"
-    mapM_ putStrLn args
-    putStrLn "The program name is:"
-    putStrLn progName
+    let program = ""
+    program <- getArgs
     fileContent <- readFile "Palabras.txt"
     -- Lista de todas las palabras.
+    
 
     let listOfWords = lines fileContent
     let sizeOfList = length listOfWords
@@ -440,40 +436,21 @@ main = do
 
     index <- randomRIO (0, sizeOfList - 1)
     let randomWord =  listOfWords !! index
+
+
+    let programLenght = length program
+
+    if programLenght > 0 then do
+        print ("La palabra es : " ++ randomWord ++ " con index : " ++ show index)
+        if program !! 0 == "mentemaestra" then do
+            initMenteMaestra 0 randomWord
+        else if program !! 0 == "descifrador" then do
+            initDecifrador 0 randomWord listOfWords sizeOfList
+        else do
+            putStrLn "No se reconoce el programa"
+    else do
+        putStrLn "No Ingreso ningun argumento al programa"
+            
     
-    print ("La palabra es : " ++ randomWord ++ " con index : " ++ show index)
-
-  
-    
-
-    -- Lista de puntos de las palabras
-    let word = "12345"
-    let ver = "TTTTT"
-    let cont = 0
-
-    let randomWordSplited = splitOn "" randomWord
-    print randomWordSplited
-    let listOfChars = [randomWordSplited, ["1", "2", "3", "4", "5"]]
-    print listOfChars
-    print (listOfChars !! 1)
-    
-    initDecifrador 1 randomWord listOfWords sizeOfList
-    
-
-    -- initMenteMaestra 1 randomWord
-
-    -- salir :: Integer -> String
-    -- salir n = contador n
-    --     where
-    --         contador n
-    --             | n == 6 = "Perdiste"
-    --             | otherwise "Sigue"
-    
-
-    -- if word == "CINCO" then do
-    --     print(ver)
-    -- else do
-    --     let cont = cont + 1
-    --     main
 
     
