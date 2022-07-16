@@ -357,6 +357,41 @@ listarSinCosto indice long listCost listWithout = do
     else do 
         listWithout
 
+asignarEval :: [Char] --letra de la evaluacion
+    -> Float --valor
+asignarEval letra = do
+    if letra == ['T']
+        then do
+            -0.2
+    else if letra == ['V']
+        then -0.1
+    else do
+        0.0
+
+obtenerPuntajeE :: Int -- ^ Posicion del array del string
+    -> [[Char]] -- ^ String a evaluar caracter por caracter
+    -> [[Char]] -- ^ Palabra del diccionario
+    -> ([[Char]],Float) -- ^ Tupla con el array de caracteres y su evaluacion
+    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
+obtenerPuntajeE pos eval palabra puntaje = do 
+    if pos < 5
+        then do 
+            let oldPuntaje = snd puntaje
+            let newPuntaje = (palabra, oldPuntaje + asignarEval (eval !! pos))
+            obtenerPuntajeE (pos + 1) eval palabra newPuntaje
+    else do
+        puntaje
+
+empezarEval :: [[Char]] --String de evaluacion creado
+    -> [[Char]] --Palabra asociada
+    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
+empezarEval eval palabra = do
+    let par = obtenerPuntajeE 0 eval palabra (palabra,1.0)
+    par
+
+
+
+
 createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
 createEvaluationStringTV counter evaluationString stringEvaluationList = do
     if counter < 5
@@ -463,9 +498,10 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
         let ver = contains palabra1 todas
         print (ver)
-
-        let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
-        print (evaluationStrings)
+        let ver2 = empezarEval lchar lrW 
+        print(ver2)
+        --let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
+        --print (evaluationStrings)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
