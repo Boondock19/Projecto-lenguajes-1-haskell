@@ -322,6 +322,40 @@ revisar num x randomWord lista listOfBulls= do
     else do
         revisionV 0 x listOfBulls lista
 
+eliminarPalabras :: Int --indice
+    -> Int --longitud de lista de todas las palabras
+    -> [[[Char]]] --lista a verificar
+    -> [[[Char]]] --lista de palabras nueva
+    -> [[[Char]]] --lista de todas las palabras
+    -> [[[Char]]] --devolver lista filtrada
+eliminarPalabras indice long listaUno listaDos listaTodas = do
+    if long > indice 
+        then do 
+            let word = listaTodas !! indice
+            if contains word listaUno
+                then do 
+                    eliminarPalabras (indice+1) long listaUno listaDos listaTodas
+
+            else do
+                let new = listaDos ++ [word]
+                eliminarPalabras (indice+1) long listaUno new listaTodas
+    else do
+        listaDos
+
+listarSinCosto :: Int --indice
+    -> Int --longitud
+    -> [([[Char]],Float)] -- lista con costo
+    -> [[[Char]]] --lista sin costo
+    -> [[[Char]]] --devolver lista sin costo
+listarSinCosto indice long listCost listWithout = do
+    if indice < long
+        then do
+            let pair = listCost !! indice
+            let word = fst pair
+            let new = listWithout ++ [word]
+            listarSinCosto (indice+1) long listCost new
+    else do 
+        listWithout
 
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
@@ -397,18 +431,28 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         -- print sizeOfList
         let splitedWords = splitAllWords listOfWords 0 sizeOfListOfWords [[[]]]
         let splitAllWordsDroped = drop 1 splitedWords
+        let sizeSplitsAll = length splitAllWordsDroped
         -- print splitedWords
         let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
-        print ("FUNCINA CO;O")
         let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
-        print (filteredListVacas)
+        
         let tamañoPenultima = length filteredListVacas 
         let puntajesAntes = obtenerPuntajeTot 0 tamañoPenultima filteredListVacas []
-        print (puntajesAntes)
+        
         let ordenadas = sortOn snd puntajesAntes
-        print (ordenadas)
+       
         let tenWords = take 10 ordenadas
         print (tenWords)
+
+        let nivel1 = tenWords !! 0
+        let palabra1 = fst nivel1
+        print (palabra1)
+        let sizeTenWords = length tenWords
+        let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
+        print(listaSinCosto)
+        let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
+        let ver = contains palabra1 todas
+        print (ver)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
