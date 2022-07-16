@@ -390,18 +390,26 @@ empezarEval eval palabra = do
     par
 
 
+{- |
+    Funcion que recibe un counter que representa el index de
+    las palabras, el string de evaluacion generado y una lista 
+    contenedora de los strings . 
 
+-}
 
-createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
-createEvaluationStringTV counter evaluationString stringEvaluationList = do
+createEvaluationStringT :: Int -> [[Char]] -> [[[Char]]] ->IO()
+createEvaluationStringT counter evaluationString stringEvaluationList = do
     if counter < 5
         then do
+            
             let (x,_:ys) = splitAt counter evaluationString
+            print ("Este es x: " ++ show x)
+            print ("Este es ys: " ++ show ys)
             let stringArreglado = [x ++ ["T"] ++ ys]
             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
-            createEvaluationStringTV (counter+1) evaluationString newEvaluationStringList
+            createEvaluationStringT (counter+1) (stringArreglado !! 0) newEvaluationStringList
     else do
-        stringEvaluationList
+        print stringEvaluationList
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
@@ -500,8 +508,8 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         print (ver)
         let ver2 = empezarEval lchar lrW 
         print(ver2)
-        --let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
-        --print (evaluationStrings)
+        createEvaluationStringT 0 ["-","-","-","-","-"] []
+        -- print evaluationStrings
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
