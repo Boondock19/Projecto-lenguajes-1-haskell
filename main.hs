@@ -357,6 +357,16 @@ listarSinCosto indice long listCost listWithout = do
     else do 
         listWithout
 
+createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
+createEvaluationStringTV counter evaluationString stringEvaluationList = do
+    if counter < 5
+        then do
+            let (x,_:ys) = splitAt counter evaluationString
+            let stringArreglado = [x ++ ["T"] ++ ys]
+            let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+            createEvaluationStringTV (counter+1) evaluationString newEvaluationStringList
+    else do
+        stringEvaluationList
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
@@ -453,6 +463,9 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
         let ver = contains palabra1 todas
         print (ver)
+
+        let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
+        print (evaluationStrings)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
