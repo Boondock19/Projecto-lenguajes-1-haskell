@@ -397,19 +397,70 @@ empezarEval eval palabra = do
 
 -}
 
-createEvaluationStringT :: Int -> [[Char]] -> [[[Char]]] ->IO()
-createEvaluationStringT counter evaluationString stringEvaluationList = do
+createEvaluationStringFromBeginningT :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
+createEvaluationStringFromBeginningT counter evaluationString stringEvaluationList = do
     if counter < 5
         then do
             
             let (x,_:ys) = splitAt counter evaluationString
-            print ("Este es x: " ++ show x)
-            print ("Este es ys: " ++ show ys)
             let stringArreglado = [x ++ ["T"] ++ ys]
             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
-            createEvaluationStringT (counter+1) (stringArreglado !! 0) newEvaluationStringList
+            createEvaluationStringFromBeginningT (counter+1) (head stringArreglado) newEvaluationStringList
     else do
-        print stringEvaluationList
+        stringEvaluationList
+
+{- |
+    Funcion que recibe un counter que representa el index de
+    las palabras, el string de evaluacion generado y una lista 
+    contenedora de los strings . 
+
+-}
+
+createEvaluationStringFromBeginningV :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
+createEvaluationStringFromBeginningV counter evaluationString stringEvaluationList = do
+    if counter < 5
+        then do
+            
+            let (x,_:ys) = splitAt counter evaluationString
+            let stringArreglado = [x ++ ["V"] ++ ys]
+            let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+            createEvaluationStringFromBeginningV (counter+1) (head stringArreglado) newEvaluationStringList
+    else do
+        stringEvaluationList
+
+-- createEvaluationStringFromBackT :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
+-- createEvaluationStringFromBackT counter evaluationString stringEvaluationList = do
+--     if counter > 0
+--         then do
+            
+--             let (x,_:ys) = splitAt counter evaluationString
+--             let stringArreglado = [x ++ ["T"] ++ ys]
+--             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+--             createEvaluationStringFromBackT (counter-1) (head stringArreglado) newEvaluationStringList
+--     else do
+--         stringEvaluationList
+
+{- |
+    Funcion que recibe un counter que representa el index de
+    las palabras, el string de evaluacion generado y una lista 
+    contenedora de los strings . 
+
+-}
+
+-- createEvaluationStringFromBackV :: Int -> [[Char]] -> [[[Char]]] ->IO()
+-- createEvaluationStringFromBackV counter evaluationString stringEvaluationList = do
+--     if counter > 0
+--         then do
+            
+--             let (x:y,_) = splitAt counter evaluationString
+--             print ("Este es x: " ++ show x)
+--             print ("Este es ys: " ++ show y)
+--             let stringArreglado = [x ++ ["V"] ++  y]
+--             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+--             createEvaluationStringFromBackV (counter-1) (head stringArreglado) newEvaluationStringList
+--     else do
+--         print stringEvaluationList
+
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
@@ -497,18 +548,27 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let tenWords = take 10 ordenadas
         print (tenWords)
 
-        let nivel1 = tenWords !! 0
-        let palabra1 = fst nivel1
-        print (palabra1)
-        let sizeTenWords = length tenWords
-        let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
-        print(listaSinCosto)
-        let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
-        let ver = contains palabra1 todas
-        print (ver)
-        let ver2 = empezarEval lchar lrW 
-        print(ver2)
-        createEvaluationStringT 0 ["-","-","-","-","-"] []
+        {-
+            Aqui si la lista de 10 palabras esta vacia, quiere decir que no hay ninguna palabra que cumpla con los requisitos
+            y por lo tanto el usuario esta haciendo trampa.
+        -}
+
+        -- let nivel1 = tenWords !! 0
+        -- let palabra1 = fst nivel1
+        -- print (palabra1)
+        -- let sizeTenWords = length tenWords
+        -- let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
+        -- print(listaSinCosto)
+        -- let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
+        -- let ver = contains palabra1 todas
+        -- print (ver)
+        -- let ver2 = empezarEval lchar lrW 
+        -- print(ver2)
+        let listOfEvaluationsT = createEvaluationStringFromBeginningT 0 ["-","-","-","-","-"] []
+        let listOfEvaluationsV = createEvaluationStringFromBeginningV 0 ["-","-","-","-","-"] listOfEvaluationsT
+        -- let listOfEvaluationsT2 = createEvaluationStringFromBackT 5 ["-","-","-","-","-"] listOfEvaluationsV
+        -- createEvaluationStringFromBackV 5 ["-","-","-","-","-"] listOfEvaluationsT2
+        -- let listOfEvaluationsV2 = 
         -- print evaluationStrings
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
@@ -546,6 +606,12 @@ main = do
         if program !! 0 == "mentemaestra" then do
             initMenteMaestra 0 randomWord
         else if program !! 0 == "descifrador" then do
+
+            {-
+                Hacer drop de la palabra adivinada por la computadora 
+                y de igual manera en las llamadas recursivas.
+                
+            -}
             initDecifrador 0 randomWord listOfWords sizeOfList
         else do
             putStrLn "No se reconoce el programa"
