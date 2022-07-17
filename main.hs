@@ -362,9 +362,9 @@ asignarEval :: [Char] --letra de la evaluacion
 asignarEval letra = do
     if letra == ['T']
         then do
-            -0.2
+            0.2
     else if letra == ['V']
-        then -0.1
+        then 0.1
     else do
         0.0
 
@@ -377,7 +377,7 @@ obtenerPuntajeE pos eval palabra puntaje = do
     if pos < 5
         then do 
             let oldPuntaje = snd puntaje
-            let newPuntaje = (palabra, oldPuntaje + asignarEval (eval !! pos))
+            let newPuntaje = (palabra, oldPuntaje - asignarEval (eval !! pos))
             obtenerPuntajeE (pos + 1) eval palabra newPuntaje
     else do
         puntaje
@@ -386,47 +386,96 @@ empezarEval :: [[Char]] --String de evaluacion creado
     -> [[Char]] --Palabra asociada
     -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
 empezarEval eval palabra = do
-    let par = obtenerPuntajeE 0 eval palabra (palabra,1.0)
+    let par = obtenerPuntajeE 0 eval palabra (eval,1.0)
     par
 
 
-{- |
-    Funcion que recibe un counter que representa el index de
-    las palabras, el string de evaluacion generado y una lista 
-    contenedora de los strings . 
+posibilidad :: [Char] -> Int -> [String]
+posibilidad chars 1 = map (:[]) chars
+posibilidad chars n = concatMap (\front -> map (front ++) (posibilidad chars 1)) $ posibilidad chars (n - 1)
+    
+todasPosibilidades :: [String]
+todasPosibilidades = concatMap (posibilidad (['T','V','-'])) [5]
 
--}
-
-createEvaluationStringFromBeginningT :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
-createEvaluationStringFromBeginningT counter evaluationString stringEvaluationList = do
-    if counter < 5
+limpiarUnaXUna :: Int -- indice
+    -> [[Char]] -- evaluacion
+    -> String -- posibilidad a comparar
+    -> [String] --lista con todas las posibilidades
+    -> [[Char]] --lista a llenar
+    -> [[Char]] --devolver la posibilidad
+limpiarUnaXUna indice eval posibility todas filtro = do
+    
+    if indice < 5
         then do
-            
-            let (x,_:ys) = splitAt counter evaluationString
-            let stringArreglado = [x ++ ["T"] ++ ys]
-            let newEvaluationStringList = stringEvaluationList ++ stringArreglado
-            createEvaluationStringFromBeginningT (counter+1) (head stringArreglado) newEvaluationStringList
+            let letraE = eval !! indice
+            let letraP = posibility !! indice
+            if letraE == "T"
+                then do 
+                    if letraP == 'T'
+                        then do
+                            let new = filtro ++ [[letraP]]
+                            limpiarUnaXUna (indice+1) eval posibility todas new
+                            
+                    else do
+                        limpiarUnaXUna (indice+1) eval posibility todas filtro
+            else do
+                let new = filtro ++ [letraE]
+                limpiarUnaXUna (indice+1) eval posibility todas new            
+
+    else do 
+        filtro 
+
+
+limpiarEvals :: Int --indice
+    -> Int --longitud
+    -> [[Char]] --evaluacion del usuario
+    -> [String] --lista con todas las posibilidades
+    -> [String] --lista a llenar
+    -> [String] --devuelve la lista limpia
+limpiarEvals indice long eval todas filtro = do
+    if indice < long
+        then do 
+            let posibility = todas !! indice
+            let newWord = limpiarUnaXUna 0 eval posibility todas []
+            let size = length newWord
+            if size == 5
+                then do
+                    let newList = filtro ++ newWord
+                    limpiarEvals (indice+1) long eval todas newList
+            else do
+                limpiarEvals (indice+1) long eval todas filtro
     else do
-        stringEvaluationList
+        filtro
 
-{- |
-    Funcion que recibe un counter que representa el index de
-    las palabras, el string de evaluacion generado y una lista 
-    contenedora de los strings . 
+-- createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
+-- createEvaluationStringTV counter evaluationString stringEvaluationList = do
+--     if counter < 5
+--         then do
+--             let (x,_:ys) = splitAt counter evaluationString
+--             let stringArreglado = [x ++ ["T"] ++ ys]
+--             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+--             createEvaluationStringTV (counter+1) (head stringArreglado) newEvaluationStringList
+--     else do
+--         stringEvaluationList
 
--}
+-- {- |
+--     Funcion que recibe un counter que representa el index de
+--     las palabras, el string de evaluacion generado y una lista 
+--     contenedora de los strings . 
 
-createEvaluationStringFromBeginningV :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
-createEvaluationStringFromBeginningV counter evaluationString stringEvaluationList = do
-    if counter < 5
-        then do
+-- -}
+
+-- createEvaluationStringFromBeginningV :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
+-- createEvaluationStringFromBeginningV counter evaluationString stringEvaluationList = do
+--     if counter < 5
+--         then do
             
-            let (x,_:ys) = splitAt counter evaluationString
-            let stringArreglado = [x ++ ["V"] ++ ys]
-            let newEvaluationStringList = stringEvaluationList ++ stringArreglado
-            createEvaluationStringFromBeginningV (counter+1) (head stringArreglado) newEvaluationStringList
-    else do
-        stringEvaluationList
+--             let (x,_:ys) = splitAt counter evaluationString
+--             let stringArreglado = [x ++ ["V"] ++ ys]
+--             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
+--             createEvaluationStringFromBeginningV (counter+1) (head stringArreglado) newEvaluationStringList
+--     else do
+--         stringEvaluationList
 
 -- createEvaluationStringFromBackT :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
 -- createEvaluationStringFromBackT counter evaluationString stringEvaluationList = do
@@ -546,7 +595,7 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let ordenadas = sortOn snd puntajesAntes
        
         let tenWords = take 10 ordenadas
-        print (tenWords)
+        --print (tenWords)
 
         {-
             Aqui si la lista de 10 palabras esta vacia, quiere decir que no hay ninguna palabra que cumpla con los requisitos
@@ -555,29 +604,29 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
 
         -- let nivel1 = tenWords !! 0
         -- let palabra1 = fst nivel1
-        -- print (palabra1)
+        -- --print (palabra1)
         -- let sizeTenWords = length tenWords
         -- let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
-        -- print(listaSinCosto)
+        -- --print(listaSinCosto)
         -- let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
         -- let ver = contains palabra1 todas
-        -- print (ver)
+        -- --print (ver)
         -- let ver2 = empezarEval lchar lrW 
-        -- print(ver2)
-        let listOfEvaluationsT = createEvaluationStringFromBeginningT 0 ["-","-","-","-","-"] []
-        let listOfEvaluationsV = createEvaluationStringFromBeginningV 0 ["-","-","-","-","-"] listOfEvaluationsT
-        -- let listOfEvaluationsT2 = createEvaluationStringFromBackT 5 ["-","-","-","-","-"] listOfEvaluationsV
-        -- createEvaluationStringFromBackV 5 ["-","-","-","-","-"] listOfEvaluationsT2
-        -- let listOfEvaluationsV2 = 
-        -- print evaluationStrings
+        --print(ver2)
+        --let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
+        --print (evaluationStrings)
+
+        let var = todasPosibilidades
+        let sizeEvals = length var
+        print (sizeEvals)
+        let limpieza = limpiarEvals 0 sizeEvals lchar var []
+        print(var)
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
 
 
 
 
 
-
-    
 
 
 
