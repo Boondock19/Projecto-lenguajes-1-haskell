@@ -25,7 +25,7 @@ import System.Random
 import Data.List(sort)
 import Data.List.Split
 import Data.Char
-
+import Data.Bool
 
 
 
@@ -113,7 +113,7 @@ filterByToros listOfTuples num sizeOfList listOfWords = do
 -}
 
 
-filterByVacas ::  [([Char],Int)] -- ^ Array de tuplas con las letras que son T y su posicion
+filterByVacas ::  [([Char],Int)] -- ^ Array de tuplas con las letras que son V y su posicion
     -> Int  -- ^ Posicion del Array de palabras
     -> Int  -- ^ Tamaño del Array de palabras
     -> [[[Char]]] -- ^ Lista de palabras filtradas por contener V en el string de Evaluacion
@@ -510,6 +510,63 @@ limpiarEvals indice long eval todas filtro = do
 --     else do
 --         print stringEvaluationList
 
+{- |
+    Funcion que recibe un String o [Char] (El string de evaluacion)
+    y un String o [Char] (La palabra generada/escogida).
+    Y retorna una lista de [[[Char]]] (La lista de todas las posibilidades validas)
+    A partir de un string de evaluacion, la palabra escogida y la lista de 
+    todas las palabras.
+-}
+getFilteredValidWords :: String -- ^ string de evaluacion
+    -> String -- ^ string escogido
+    -> [[[Char]]] -- ^ lista de todas las palabras separadas
+    -> [[[Char]]] -- ^ lista de todas las palabras validas obtenidas
+getFilteredValidWords evaluationString randomWord  splitAllWordsDroped   = do
+        let x1 = splitOn "" evaluationString
+        let lchar = drop 1 x1
+        let lrW = drop 1 (splitOn "" randomWord)
+
+        let listOfToros =  revisarToros 0 lrW lchar []
+        let sizeOfList = length listOfToros
+
+        let listOfVacas =  revisarVacas 0 lrW lchar []
+        let sizeOfListVacas = length listOfVacas
+
+        
+        let sizeSplitsAll = length splitAllWordsDroped
+        -- print splitedWords
+        let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
+        let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
+        filteredListVacas
+
+{- |
+    Funcion que recibe un counter que representa el index de
+    los strings de evaluacion palabras, la palabra obtenida y una lista 
+    contenedora de los strings validos de evaluacion . 
+    
+-}
+
+createListOfValidWords :: Int -- ^ counter
+    -> Int -- ^ tamaño de la lista de strings de evaluacion
+    -> [String] -- ^ array de strings de evaluacion
+    -> String -- ^ string escogido
+    -> [[[Char]]] -- ^ lista de todas las palabras separadas
+    -> [String] -- ^ lista de todas las palabras validas obtenidas
+    -> [String] -- ^ return lista de todas las palabras validas obtenidas
+createListOfValidWords counter sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped currentList = do
+    if counter < sizeOfEvaluationList
+        then do
+            let validWords = getFilteredValidWords (allEvaluationStrings !! counter) chosenWord splitAllWordsDroped
+            let isValid = length validWords > 0  
+            if isValid
+                then do
+                    let newList = currentList ++ [allEvaluationStrings !! counter]
+                    createListOfValidWords (counter+1) sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped newList
+                else do
+                    createListOfValidWords (counter+1) sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped currentList
+        else do
+            currentList
+
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
@@ -562,15 +619,17 @@ initMenteMaestra currentTurn randomWord = do
 initDecifrador :: Int -- ^ Turno actual del juego.
     -> String -- ^ Palabra random escogida por la computadora.
     -> [String] -- ^ Lista de todas las palabras.
+    -> [[[Char]]] -- ^ Lista de todas las palabras separadas.
     -> Int  -- ^ Tamaño de la lista de palabras.
     -> IO ()
-initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
+initDecifrador currentTurn randomWord listOfWords splitAllWordsDroped sizeOfListOfWords = do
     if currentTurn > 6 then putStrLn ("Haz perdido , la palabra era " ++ randomWord )
 
     else do
         print randomWord
         putStrLn "Evaluacion: "
         x <- getLine
+        print ("Evaluacion: " ++ x)
         let x1 = splitOn "" x
         let lchar = drop 1 x1
         let lrW = drop 1 (splitOn "" randomWord)
@@ -581,20 +640,22 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
         let listOfVacas =  revisarVacas 0 lrW lchar []
         let sizeOfListVacas = length listOfVacas
 
-        -- print sizeOfList
-        let splitedWords = splitAllWords listOfWords 0 sizeOfListOfWords [[[]]]
-        let splitAllWordsDroped = drop 1 splitedWords
+       
         let sizeSplitsAll = length splitAllWordsDroped
         -- print splitedWords
         let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
         let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
-        
+
+        print (filteredListVacas)
+       
         let tamañoPenultima = length filteredListVacas 
         let puntajesAntes = obtenerPuntajeTot 0 tamañoPenultima filteredListVacas []
         
         let ordenadas = sortOn snd puntajesAntes
        
         let tenWords = take 10 ordenadas
+        let firstWord = head tenWords
+        
         --print (tenWords)
 
         {-
@@ -618,10 +679,18 @@ initDecifrador currentTurn randomWord listOfWords sizeOfListOfWords = do
 
         let var = todasPosibilidades
         let sizeEvals = length var
-        print (sizeEvals)
+        print  sizeEvals
         let limpieza = limpiarEvals 0 sizeEvals lchar var []
-        print(var)
-        initDecifrador ( currentTurn + 1 ) randomWord listOfWords sizeOfListOfWords
+        print var
+        let palabraElegida = concat (fst firstWord)
+        print palabraElegida
+        print(var !! 17)
+        let filteredListVacas2 = getFilteredValidWords (var !! 17) (concat (fst firstWord)) splitAllWordsDroped
+        print filteredListVacas2
+        let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeEvals var palabraElegida splitAllWordsDroped []
+        putStrLn "Salida de todos los posibles strings de evaluacion: "
+        print allPossiblesEvaluationStrings
+        initDecifrador ( currentTurn + 1 ) randomWord listOfWords splitAllWordsDroped sizeOfListOfWords
 
 
 
@@ -661,7 +730,9 @@ main = do
                 y de igual manera en las llamadas recursivas.
                 
             -}
-            initDecifrador 0 randomWord listOfWords sizeOfList
+            let splitedWords = splitAllWords listOfWords 0 sizeOfList [[[]]]
+            let splitAllWordsDroped = drop 1 splitedWords
+            initDecifrador 0 randomWord listOfWords splitAllWordsDroped sizeOfList
         else do
             putStrLn "No se reconoce el programa"
     else do
