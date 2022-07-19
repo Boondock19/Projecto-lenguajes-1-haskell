@@ -397,55 +397,58 @@ posibilidad chars n = concatMap (\front -> map (front ++) (posibilidad chars 1))
 todasPosibilidades :: [String]
 todasPosibilidades = concatMap (posibilidad (['T','V','-'])) [5]
 
-limpiarUnaXUna :: Int -- indice
+limpiarUnaXUnaT :: Int -- indice
     -> [[Char]] -- evaluacion
-    -> String -- posibilidad a comparar
-    -> [String] --lista con todas las posibilidades
+    -> [[Char]] -- eval a verificar
     -> [[Char]] --lista a llenar
     -> [[Char]] --devolver la posibilidad
-limpiarUnaXUna indice eval posibility todas filtro = do
+limpiarUnaXUnaT indice string posibility out = do
     
     if indice < 5
         then do
-            let letraE = eval !! indice
+            let letraS = string !! indice
             let letraP = posibility !! indice
-            if letraE == "T"
-                then do 
-                    if letraP == 'T'
-                        then do
-                            let new = filtro ++ [[letraP]]
-                            limpiarUnaXUna (indice+1) eval posibility todas new
-                            
-                    else do
-                        limpiarUnaXUna (indice+1) eval posibility todas filtro
-            else do
-                let new = filtro ++ [letraE]
-                limpiarUnaXUna (indice+1) eval posibility todas new            
-
-    else do 
-        filtro 
-
-
-limpiarEvals :: Int --indice
-    -> Int --longitud
-    -> [[Char]] --evaluacion del usuario
-    -> [String] --lista con todas las posibilidades
-    -> [String] --lista a llenar
-    -> [String] --devuelve la lista limpia
-limpiarEvals indice long eval todas filtro = do
-    if indice < long
-        then do 
-            let posibility = todas !! indice
-            let newWord = limpiarUnaXUna 0 eval posibility todas []
-            let size = length newWord
-            if size == 5
+            if letraS == ['T']
                 then do
-                    let newList = filtro ++ newWord
-                    limpiarEvals (indice+1) long eval todas newList
-            else do
-                limpiarEvals (indice+1) long eval todas filtro
+                    if letraP == letraS
+                        then do 
+                            let newOut = out ++ [letraP]
+                            limpiarUnaXUnaT (indice+1) string posibility newOut
+                        
+                    else do 
+                        limpiarUnaXUnaT (indice+1) string posibility out
+            
+            else do 
+                let newOut = out ++ [letraP]
+                limpiarUnaXUnaT (indice+1) string posibility newOut
+                
+    else do 
+        out 
+
+
+limpiarEvalsT :: Int --indice
+    -> Int --long
+    -> [[Char]] -- string de eval
+    -> [[[Char]]] --lista de todas las posibilidades
+    -> [[[Char]]] --lista a llenar
+    -> [[[Char]]] --devuelve un todas las posibilidades filtrados por T
+limpiarEvalsT indice long string lista filtro = do
+    if indice < long 
+        then do 
+            let eval = lista !! indice
+            let posibility = limpiarUnaXUnaT 0 string eval []
+            let sizeP = length posibility
+            if sizeP == 5
+                then do 
+                let newList = filtro ++ [posibility]
+                limpiarEvalsT (indice+1) long string lista newList
+            else do 
+                limpiarEvalsT (indice+1) long string lista filtro
+
     else do
         filtro
+
+
 
 -- createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
 -- createEvaluationStringTV counter evaluationString stringEvaluationList = do
@@ -680,16 +683,20 @@ initDecifrador currentTurn randomWord listOfWords splitAllWordsDroped sizeOfList
         let var = todasPosibilidades
         let sizeEvals = length var
         print  sizeEvals
-        let limpieza = limpiarEvals 0 sizeEvals lchar var []
-        print var
-        let palabraElegida = concat (fst firstWord)
-        print palabraElegida
-        print(var !! 17)
-        let filteredListVacas2 = getFilteredValidWords (var !! 17) (concat (fst firstWord)) splitAllWordsDroped
-        print filteredListVacas2
-        let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeEvals var palabraElegida splitAllWordsDroped []
-        putStrLn "Salida de todos los posibles strings de evaluacion: "
-        print allPossiblesEvaluationStrings
+        
+        let posibilidades = splitAllWords var 0 sizeEvals [[[]]]
+        let posibilidadesDropped = drop 1 posibilidades
+        let clear = limpiarEvalsT 0 sizeEvals lchar posibilidadesDropped []
+        print clear
+        --print var
+       -- let palabraElegida = concat (fst firstWord)
+       -- print palabraElegida
+       -- print(var !! 17)
+        --let filteredListVacas2 = getFilteredValidWords (var !! 17) (concat (fst firstWord)) splitAllWordsDroped
+        --print filteredListVacas2
+        --let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeEvals var palabraElegida splitAllWordsDroped []
+        --putStrLn "Salida de todos los posibles strings de evaluacion: "
+        --print allPossiblesEvaluationStrings
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords splitAllWordsDroped sizeOfListOfWords
 
 
