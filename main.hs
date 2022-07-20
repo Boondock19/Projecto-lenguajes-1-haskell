@@ -714,7 +714,6 @@ main = do
     let programLenght = length program
 
     if programLenght > 0 then do
-        print ("La palabra es : " ++ randomWord ++ " con index : " ++ show index)
         if program !! 0 == "mentemaestra" then do
             initMenteMaestra 0 randomWord
         else if program !! 0 == "descifrador" then do
@@ -724,6 +723,8 @@ main = do
                 y de igual manera en las llamadas recursivas.
                 
             -}
+
+            
             let splitedWords = splitAllWords listOfWords 0 sizeOfList [[[]]]
             let splitAllWordsDroped = drop 1 splitedWords
             initDecifrador 0 randomWord listOfWords splitAllWordsDroped sizeOfList
