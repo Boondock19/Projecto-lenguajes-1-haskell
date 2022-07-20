@@ -4,7 +4,7 @@ Description : Modulo que el implementa el juego Wordle
 Copyright   : (c) Ana Sofia Santos, 2022
                   Jose Matias Gonzalez V, 2022
 License     : GPL-3
-Maintainer  : 1510627@usb.ve 1510627@usb.ve
+Maintainer  : 15-10627@usb.ve 17-10602@usb.ve
 Stability   : experimental
 Portability : POSIX
 
@@ -51,7 +51,7 @@ contains elem myList
 -}
 
 splitAllWords :: [String] -- ^ Lista de palabras a separar.
-    -> Int -- ^ posicion de la palabra en el array de palabras.
+    -> Int -- ^ posicion de la palabra en el lista de palabras.
     -> Int -- ^ tamaño de la lista de palabras.
     -> [[[Char]]] -- ^ Lista de palabras separadas.
     -> [[[Char]]] -- ^ Retorna la lista de palabras separadas.
@@ -80,14 +80,14 @@ mayuscula (x:xs) = toUpper x : [toUpper x | x <- xs]
     Funcion que filtra la lista de todas las palabras, por
     aquellas que posean las letras (Aquellas con T) que 
     componen al String de evaluacion, en la misma posicion . 
-    Y retorna un array con las palabras que cumplen con la condicion.
+    Y retorna un lista con las palabras que cumplen con la condicion.
 -}
 
-filterByToros ::  [([Char],Int)] -- ^ Array de tuplas con las letras que son T y su posicion
-    -> Int  -- ^ Posicion del Array de palabras
-    -> Int  -- ^ Tamaño del Array de palabras
-    -> [[[Char]]] -- ^ Lista de palabras filtradas por contener T en el string de Evaluacion
-    -> [[[Char]]]   -- ^ Retorna la lista de palabras filtradas por contener T en el string de Evaluacion
+filterByToros ::  [([Char],Int)] -- ^ lista de tuplas con las letras que son T y su posicion.
+    -> Int  -- ^ Posicion del lista de palabras.
+    -> Int  -- ^ Tamaño del lista de palabras.
+    -> [[[Char]]] -- ^ Lista de palabras filtradas por contener T en el string de Evaluacion.
+    -> [[[Char]]]   -- ^ Retorna la lista de palabras filtradas por contener T en el string de Evaluacion.
 filterByToros listOfTuples num sizeOfList listOfWords = do
    
     if num < sizeOfList  then do
@@ -109,15 +109,15 @@ filterByToros listOfTuples num sizeOfList listOfWords = do
     Funcion que filtra la lista de todas las palabras previamente 
     filtradas T, poraquellas que posean las letras (Aquellas con V) que 
     componen al String de evaluacion, en diferente posicion . 
-    Y retorna un array con las palabras que cumplen con la condicion.
+    Y retorna un lista con las palabras que cumplen con la condicion.
 -}
 
 
-filterByVacas ::  [([Char],Int)] -- ^ Array de tuplas con las letras que son V y su posicion
-    -> Int  -- ^ Posicion del Array de palabras
-    -> Int  -- ^ Tamaño del Array de palabras
-    -> [[[Char]]] -- ^ Lista de palabras filtradas por contener V en el string de Evaluacion
-    ->  [[[Char]]]  -- ^ Retorna la lista de palabras filtradas por contener V en el string de Evaluacion
+filterByVacas ::  [([Char],Int)] -- ^ lista de tuplas con las letras que son V y su posicion.
+    -> Int  -- ^ Posicion del lista de palabras.
+    -> Int  -- ^ Tamaño del lista de palabras.
+    -> [[[Char]]] -- ^ Lista de palabras filtradas por contener V en el string de Evaluacion.
+    ->  [[[Char]]]  -- ^ Retorna la lista de palabras filtradas por contener V en el string de Evaluacion.
 filterByVacas listOfTuples num sizeOfList listOfWords = do
    
     if num < sizeOfList  then do
@@ -143,8 +143,8 @@ filterByVacas listOfTuples num sizeOfList listOfWords = do
 -}
 
 
-asignarPuntaje :: [Char] -- ^ Letra a evaluar
-    -> Float -- ^ Retorna el valor de evaluacion de la letra
+asignarPuntaje :: [Char] -- ^ Letra a evaluar.
+    -> Float -- ^ Retorna el valor de evaluacion de la letra.
 asignarPuntaje letra = do
     if (letra == ['A']) || (letra == ['E'])
         then do
@@ -161,14 +161,14 @@ asignarPuntaje letra = do
 
 
 {-|
-    Funcion que retorna una tupla con un array de Chars
+    Funcion que retorna una tupla con un lista de Chars
     y su respectiva evaluacion segun el puntaje. 
 -}
 
-obtenerPuntajeW :: Int -- ^ Posicion del array del string
-    -> [[Char]] -- ^ String a evaluar caracter por caracter
-    -> ([[Char]],Float) -- ^ Tupla con el array de caracteres y su evaluacion
-    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
+obtenerPuntajeW :: Int -- ^ Posicion del lista del string.
+    -> [[Char]] -- ^ String a evaluar caracter por caracter.
+    -> ([[Char]],Float) -- ^ Tupla con el lista de caracteres y su evaluacion.
+    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion.
 obtenerPuntajeW pos palabra puntaje = do 
     if pos < 5
         then do 
@@ -179,15 +179,15 @@ obtenerPuntajeW pos palabra puntaje = do
         puntaje
 
 {-|
-    Funcion que retorna una lista de tuplas con arrays de Chars
+    Funcion que retorna una lista de tuplas con listas de Chars
     y su respectiva evaluacion segun el puntaje. 
 -}
 
-obtenerPuntajeTot :: Int -- ^ Posicion del array del string
-    -> Int -- ^ Tamaño del array de palabras
-    -> [[[Char]]] -- ^ Array de palabras a evaluar
-    -> [([[Char]],Float)] -- ^  Array de tuplas con el string y su evaluacion
-    -> [([[Char]],Float)] -- ^ Retorna el array de tuplas con el string y su evaluacion
+obtenerPuntajeTot :: Int -- ^ Posicion del lista del string.
+    -> Int -- ^ Tamaño del lista de palabras.
+    -> [[[Char]]] -- ^ lista de palabras a evaluar.
+    -> [([[Char]],Float)] -- ^  lista de tuplas con el string y su evaluacion.
+    -> [([[Char]],Float)] -- ^ Retorna el lista de tuplas con el string y su evaluacion.
 obtenerPuntajeTot pos size listaPalabras listaPuntajes = do
     if pos < size 
         then do 
@@ -200,16 +200,16 @@ obtenerPuntajeTot pos size listaPalabras listaPuntajes = do
 
 {-|
     Funcion que toma el string de evaluacion ingresado por el usuario,
-    la palabra adivinada por la computadora y un array vacio de tuplas
-    y retorna un array de tuplas con el caracter correspondiente a una T
+    la palabra adivinada por la computadora y un lista vacio de tuplas
+    y retorna un lista de tuplas con el caracter correspondiente a una T
     junto a la posicion de la misma.
 -}
 
-revisarToros :: Int  -- ^ Posicion del array del string.
+revisarToros :: Int  -- ^ Posicion del lista del string.
     -> [[Char]] -- ^ String a evaluar caracter por caracter (la palabra adivinada por la computadora).
     -> [[Char]] -- ^ String de evaluacion ingresada por el usuario.
-    -> [([Char],Int)] -- ^  Array de tuplas con el caracter correspondiente a una T y su posicion en la palabra adivinada por la computadora.
-    -> [([Char],Int)] -- ^ Retorna un array de tuplas con el caracter correspondiente a una T y su posicion en la palabra de evaluacion ingresada por el usuario.
+    -> [([Char],Int)] -- ^  lista de tuplas con el caracter correspondiente a una T y su posicion en la palabra adivinada por la computadora.
+    -> [([Char],Int)] -- ^ Retorna un lista de tuplas con el caracter correspondiente a una T y su posicion en la palabra de evaluacion ingresada por el usuario.
 revisarToros num randomWord eval listOfTuples = do
     if num < 5 
         then do 
@@ -226,16 +226,16 @@ revisarToros num randomWord eval listOfTuples = do
 
 {-|
     Funcion que toma el string de evaluacion ingresado por el usuario,
-    la palabra adivinada por la computadora y un array vacio de tuplas
-    y retorna un array de tuplas con el caracter correspondiente a una V
+    la palabra adivinada por la computadora y un lista vacio de tuplas
+    y retorna un lista de tuplas con el caracter correspondiente a una V
     junto a la posicion de la misma.
 -}
 
-revisarVacas :: Int -- ^ Posicion del array del string.
+revisarVacas :: Int -- ^ Posicion del lista del string.
     -> [[Char]] -- ^ String a evaluar caracter por caracter (la palabra adivinada por la computadora).
     -> [[Char]] -- ^ String de evaluacion ingresada por el usuario.
-    -> [([Char],Int)] -- ^  Array de tuplas con el caracter correspondiente a una V y su posicion en la palabra adivinada por la computadora.
-    -> [([Char],Int)] -- ^ Retorna un array de tuplas con el caracter correspondiente a una V y su posicion en la palabra de evaluacion ingresada por el usuario.
+    -> [([Char],Int)] -- ^  lista de tuplas con el caracter correspondiente a una V y su posicion en la palabra adivinada por la computadora.
+    -> [([Char],Int)] -- ^ Retorna un lista de tuplas con el caracter correspondiente a una V y su posicion en la palabra de evaluacion ingresada por el usuario.
 revisarVacas num randomWord eval listOfTuples = do
     if num < 5 
         then do 
@@ -258,11 +258,11 @@ revisarVacas num randomWord eval listOfTuples = do
     divide el string, cambia la V por - y vuelve a unirla, se llama recursivamente.
 --}
 
-revisionV:: Int -- ^ Posicion del array del string
-    -> [[Char]]  -- ^ String a evaluar caracter por caracter (la palabra ingresada por el usuario)
-    -> [[Char]]  -- ^ Array de T de la palabra ingresada por el usuario
-    -> [Char] -- ^ String de evaluacion de la palabra ingresada por el usuario
-    -> [Char] -- ^ String de evaluacion de la palabra ingresada por el usuario con las V cambiadas por -
+revisionV:: Int -- ^ Posicion del lista del string.
+    -> [[Char]]  -- ^ String a evaluar caracter por caracter (la palabra ingresada por el usuario).
+    -> [[Char]]  -- ^ lista de T de la palabra ingresada por el usuario.
+    -> [Char] -- ^ String de evaluacion de la palabra ingresada por el usuario.
+    -> [Char] -- ^ String de evaluacion de la palabra ingresada por el usuario con las V cambiadas por - .
 revisionV num userWord listOfBulls stringEvaluation = do
     if num < 5 
         then do
@@ -287,12 +287,12 @@ revisionV num userWord listOfBulls stringEvaluation = do
     a ellas en el string de evalacion.
 -}
     
-revisar :: Int -- ^ Posicion del array del string.
+revisar :: Int -- ^ Posicion del lista del string.
     -> [[Char]] -- ^ Palabra ingresada por el usuario al adivinar.
     -> [[Char]]  -- ^ Palabra random generada por la computadora, que es la palabra a adivinar por el usuario.
     -> [Char] -- ^ String de evaluacion de la palabra ingresada por el usuario.
     -> [[Char]] -- ^ Letras que el usuario acerto y por lo tanto seran T del string de evaluacion.
-    -> [Char] -- Llamada a revisionV para revisar si existen V repetidas en el string de evaluacion.
+    -> [Char] -- ^ Llamada a revisionV para revisar si existen V repetidas en el string de evaluacion.
 revisar num x randomWord lista listOfBulls= do
     let toro = ['T']
     let guion = ['-']
@@ -322,12 +322,17 @@ revisar num x randomWord lista listOfBulls= do
     else do
         revisionV 0 x listOfBulls lista
 
-eliminarPalabras :: Int --indice
-    -> Int --longitud de lista de todas las palabras
-    -> [[[Char]]] --lista a verificar
-    -> [[[Char]]] --lista de palabras nueva
-    -> [[[Char]]] --lista de todas las palabras
-    -> [[[Char]]] --devolver lista filtrada
+{- |
+    Funcion encargada de eliminar de una lista las palabras
+    que hayan sido tomadas anteriormente.
+-}
+
+eliminarPalabras :: Int -- ^indice.
+    -> Int -- ^longitud de lista de todas las palabras.
+    -> [[[Char]]] -- ^lista a verificar.
+    -> [[[Char]]] -- ^lista de palabras nueva.
+    -> [[[Char]]] -- ^lista de todas las palabras.
+    -> [[[Char]]] -- ^devolver lista filtrada.
 eliminarPalabras indice long listaUno listaDos listaTodas = do
     if long > indice 
         then do 
@@ -342,11 +347,17 @@ eliminarPalabras indice long listaUno listaDos listaTodas = do
     else do
         listaDos
 
-listarSinCosto :: Int --indice
-    -> Int --longitud
-    -> [([[Char]],Float)] -- lista con costo
-    -> [[[Char]]] --lista sin costo
-    -> [[[Char]]] --devolver lista sin costo
+
+{- |
+    Funcion encargada de filtrar las palabras sin puntaje
+    asignado.
+-}
+
+listarSinCosto :: Int -- ^indice.
+    -> Int -- ^longitud.
+    -> [([[Char]],Float)] -- ^lista con costo.
+    -> [[[Char]]] -- ^lista sin costo.
+    -> [[[Char]]] -- ^devolver lista sin costo.
 listarSinCosto indice long listCost listWithout = do
     if indice < long
         then do
@@ -357,8 +368,12 @@ listarSinCosto indice long listCost listWithout = do
     else do 
         listWithout
 
-asignarEval :: [Char] --letra de la evaluacion
-    -> Float --valor
+{- | Funcion auxiliar que se engarca de asignar un valor
+    a un caracter en caso de ser T , V o algun otro caracter.
+-}
+
+asignarEval :: [Char] -- ^letra de la evaluacion.
+    -> Float -- ^valor.
 asignarEval letra = do
     if letra == ['T']
         then do
@@ -368,11 +383,17 @@ asignarEval letra = do
     else do
         0.0
 
-obtenerPuntajeE :: Int -- ^ Posicion del array del string
-    -> [[Char]] -- ^ String a evaluar caracter por caracter
-    -> [[Char]] -- ^ Palabra del diccionario
-    -> ([[Char]],Float) -- ^ Tupla con el array de caracteres y su evaluacion
-    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
+
+{-| Funcion auxiliar que se engarga de generar e ir modificando
+    una tupla con la palabra  y el puntaje de la misma para las 
+    niveles pares del arbol minimax.
+-}
+
+obtenerPuntajeE :: Int -- ^ Posicion del lista del string.
+    -> [[Char]] -- ^ String a evaluar caracter por caracter.
+    -> [[Char]] -- ^ Palabra del diccionario.
+    -> ([[Char]],Float) -- ^ Tupla con el lista de caracteres y su evaluacion.
+    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion.
 obtenerPuntajeE pos eval palabra puntaje = do 
     if pos < 5
         then do 
@@ -382,26 +403,51 @@ obtenerPuntajeE pos eval palabra puntaje = do
     else do
         puntaje
 
-empezarEval :: [[Char]] --String de evaluacion creado
-    -> [[Char]] --Palabra asociada
-    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion
+{-| Funcion  que se engarga de genearar una tupla con la palabra
+    y el puntaje de la misma para las niveles pares del arbol 
+    minimax.
+-}
+
+empezarEval :: [[Char]] -- ^String de evaluacion creado.
+    -> [[Char]] -- ^Palabra asociada.
+    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion.
 empezarEval eval palabra = do
     let par = obtenerPuntajeE 0 eval palabra (eval,1.0)
     par
 
 
-posibilidad :: [Char] -> Int -> [String]
+{-|
+    Funcion que genera todos los posibles strings de 
+    evaluacion .  A traves de una lista de Chars
+    y un int, que representa la posicion del string
+-}
+
+posibilidad :: [Char] -- ^ Lista de caracteres.
+     -> Int -- ^ Posicion del string.
+     -> [String] -- ^ Lista de strings de evaluacion.
 posibilidad chars 1 = map (:[]) chars
 posibilidad chars n = concatMap (\front -> map (front ++) (posibilidad chars 1)) $ posibilidad chars (n - 1)
     
-todasPosibilidades :: [String]
+{-|
+    Funcion que genera todos los posibles strings de 
+    evaluacion.
+-}
+
+todasPosibilidades :: [String] -- ^ Lista de strings de evaluacion.
 todasPosibilidades = concatMap (posibilidad (['T','V','-'])) [5]
 
-limpiarUnaXUnaT :: Int -- indice
-    -> [[Char]] -- evaluacion
-    -> [[Char]] -- eval a verificar
-    -> [[Char]] --lista a llenar
-    -> [[Char]] --devolver la posibilidad
+{- |
+    Funcion auxiliar que filtra los strings de evaluacion, retornando
+    solo aquellos que mantengan las T en la respectiva posicion
+    del string de evaluacion suministrado para comparar.
+
+-}
+
+limpiarUnaXUnaT :: Int -- ^indice.
+    -> [[Char]] -- ^evaluacion.
+    -> [[Char]] -- ^eval a verificar.
+    -> [[Char]] -- ^lista a llenar.
+    -> [[Char]] -- ^devolver la posibilidad.
 limpiarUnaXUnaT indice string posibility out = do
     
     if indice < 5
@@ -425,13 +471,19 @@ limpiarUnaXUnaT indice string posibility out = do
     else do 
         out 
 
+{- |
+    Funcion que filtra los strings de evaluacion, retornando
+    solo aquellos que mantengan las T en la respectiva posicion
+    del string de evaluacion suministrado para comparar.
 
-limpiarEvalsT :: Int --indice
-    -> Int --long
-    -> [[Char]] -- string de eval
-    -> [[[Char]]] --lista de todas las posibilidades
-    -> [[[Char]]] --lista a llenar
-    -> [[[Char]]] --devuelve un todas las posibilidades filtrados por T
+-}
+
+limpiarEvalsT :: Int -- ^indice.
+    -> Int -- ^long.
+    -> [[Char]] -- ^string de eval.
+    -> [[[Char]]] -- ^lista de todas las posibilidades.
+    -> [[[Char]]] -- ^lista a llenar.
+    -> [[[Char]]] -- ^devuelve un todas las posibilidades filtrados por T.
 limpiarEvalsT indice long string lista filtro = do
     if indice < long 
         then do 
@@ -448,71 +500,6 @@ limpiarEvalsT indice long string lista filtro = do
     else do
         filtro
 
-
-
--- createEvaluationStringTV :: Int -> [[Char]] -> [[[Char]]] ->[[[Char]]]
--- createEvaluationStringTV counter evaluationString stringEvaluationList = do
---     if counter < 5
---         then do
---             let (x,_:ys) = splitAt counter evaluationString
---             let stringArreglado = [x ++ ["T"] ++ ys]
---             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
---             createEvaluationStringTV (counter+1) (head stringArreglado) newEvaluationStringList
---     else do
---         stringEvaluationList
-
--- {- |
---     Funcion que recibe un counter que representa el index de
---     las palabras, el string de evaluacion generado y una lista 
---     contenedora de los strings . 
-
--- -}
-
--- createEvaluationStringFromBeginningV :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
--- createEvaluationStringFromBeginningV counter evaluationString stringEvaluationList = do
---     if counter < 5
---         then do
-            
---             let (x,_:ys) = splitAt counter evaluationString
---             let stringArreglado = [x ++ ["V"] ++ ys]
---             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
---             createEvaluationStringFromBeginningV (counter+1) (head stringArreglado) newEvaluationStringList
---     else do
---         stringEvaluationList
-
--- createEvaluationStringFromBackT :: Int -> [[Char]] -> [[[Char]]] -> [[[Char]]]
--- createEvaluationStringFromBackT counter evaluationString stringEvaluationList = do
---     if counter > 0
---         then do
-            
---             let (x,_:ys) = splitAt counter evaluationString
---             let stringArreglado = [x ++ ["T"] ++ ys]
---             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
---             createEvaluationStringFromBackT (counter-1) (head stringArreglado) newEvaluationStringList
---     else do
---         stringEvaluationList
-
-{- |
-    Funcion que recibe un counter que representa el index de
-    las palabras, el string de evaluacion generado y una lista 
-    contenedora de los strings . 
-
--}
-
--- createEvaluationStringFromBackV :: Int -> [[Char]] -> [[[Char]]] ->IO()
--- createEvaluationStringFromBackV counter evaluationString stringEvaluationList = do
---     if counter > 0
---         then do
-            
---             let (x:y,_) = splitAt counter evaluationString
---             print ("Este es x: " ++ show x)
---             print ("Este es ys: " ++ show y)
---             let stringArreglado = [x ++ ["V"] ++  y]
---             let newEvaluationStringList = stringEvaluationList ++ stringArreglado
---             createEvaluationStringFromBackV (counter-1) (head stringArreglado) newEvaluationStringList
---     else do
---         print stringEvaluationList
-
 {- |
     Funcion que recibe un String o [Char] (El string de evaluacion)
     y un String o [Char] (La palabra generada/escogida).
@@ -520,10 +507,10 @@ limpiarEvalsT indice long string lista filtro = do
     A partir de un string de evaluacion, la palabra escogida y la lista de 
     todas las palabras.
 -}
-getFilteredValidWords :: String -- ^ string de evaluacion
-    -> String -- ^ string escogido
-    -> [[[Char]]] -- ^ lista de todas las palabras separadas
-    -> [[[Char]]] -- ^ lista de todas las palabras validas obtenidas
+getFilteredValidWords :: String -- ^ string de evaluacion.
+    -> String -- ^ string escogido.
+    -> [[[Char]]] -- ^ lista de todas las palabras separadas.
+    -> [[[Char]]] -- ^ lista de todas las palabras validas obtenidas.
 getFilteredValidWords evaluationString randomWord  splitAllWordsDroped   = do
         let x1 = splitOn "" evaluationString
         let lchar = drop 1 x1
@@ -549,13 +536,13 @@ getFilteredValidWords evaluationString randomWord  splitAllWordsDroped   = do
     
 -}
 
-createListOfValidWords :: Int -- ^ counter
-    -> Int -- ^ tamaño de la lista de strings de evaluacion
-    -> [String] -- ^ array de strings de evaluacion
-    -> String -- ^ string escogido
-    -> [[[Char]]] -- ^ lista de todas las palabras separadas
-    -> [String] -- ^ lista de todas las palabras validas obtenidas
-    -> [String] -- ^ return lista de todas las palabras validas obtenidas
+createListOfValidWords :: Int -- ^ counter.
+    -> Int -- ^ tamaño de la lista de strings de evaluacion.
+    -> [String] -- ^ lista de strings de evaluacion.
+    -> String -- ^ string escogido.
+    -> [[[Char]]] -- ^ lista de todas las palabras separadas.
+    -> [String] -- ^ lista de todas las palabras validas obtenidas.
+    -> [String] -- ^ return lista de todas las palabras validas obtenidas.
 createListOfValidWords counter sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped currentList = do
     if counter < sizeOfEvaluationList
         then do
@@ -611,7 +598,7 @@ initMenteMaestra currentTurn randomWord = do
             putStrLn (revisar 0 lchar lrW [] [[]])
             initMenteMaestra (currentTurn + 1 ) randomWord
 
-{-
+{- |
     Funcion encarga de inicializar el modo descrifrador del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
     un string de evaluacion TTTTT e indicar que la computadora ha ganado.
