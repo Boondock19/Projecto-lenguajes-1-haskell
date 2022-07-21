@@ -384,6 +384,8 @@ asignarEval letra = do
         0.0
 
 
+
+
 {-| Funcion auxiliar que se engarga de generar e ir modificando
     una tupla con la palabra  y el puntaje de la misma para las 
     niveles pares del arbol minimax.
@@ -391,15 +393,14 @@ asignarEval letra = do
 
 obtenerPuntajeE :: Int -- ^ Posicion del lista del string.
     -> [[Char]] -- ^ String a evaluar caracter por caracter.
-    -> [[Char]] -- ^ Palabra del diccionario.
     -> ([[Char]],Float) -- ^ Tupla con el lista de caracteres y su evaluacion.
     -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion.
-obtenerPuntajeE pos eval palabra puntaje = do 
+obtenerPuntajeE pos eval puntaje = do 
     if pos < 5
         then do 
             let oldPuntaje = snd puntaje
-            let newPuntaje = (palabra, oldPuntaje - asignarEval (eval !! pos))
-            obtenerPuntajeE (pos + 1) eval palabra newPuntaje
+            let newPuntaje = (eval, oldPuntaje - asignarEval (eval !! pos))
+            obtenerPuntajeE (pos + 1) eval newPuntaje
     else do
         puntaje
 
@@ -408,12 +409,19 @@ obtenerPuntajeE pos eval palabra puntaje = do
     minimax.
 -}
 
-empezarEval :: [[Char]] -- ^String de evaluacion creado.
-    -> [[Char]] -- ^Palabra asociada.
-    -> ([[Char]],Float) -- ^ Retorna la tupla con el string y su evaluacion.
-empezarEval eval palabra = do
-    let par = obtenerPuntajeE 0 eval palabra (eval,1.0)
-    par
+empezarEval :: Int 
+    -> Int
+    -> [[[Char]]] -- ^String de evaluacion creado.
+    -> [([[Char]],Float)] -- ^Palabra asociada.
+    -> [([[Char]],Float)] -- ^ Retorna la tupla con el string y su evaluacion.
+empezarEval pos size eval lista = do
+    if pos < size 
+        then do
+            let par = obtenerPuntajeE 0 (eval !! pos) (eval !! pos,1.0)
+            let new = lista ++ [par]
+            empezarEval (pos+1) size eval new
+    else do
+        lista
 
 
 {-|
@@ -538,15 +546,15 @@ getFilteredValidWords evaluationString randomWord  splitAllWordsDroped   = do
 
 createListOfValidWords :: Int -- ^ counter.
     -> Int -- ^ tamaño de la lista de strings de evaluacion.
-    -> [String] -- ^ lista de strings de evaluacion.
+    -> [[[Char]]] -- ^ lista de strings de evaluacion.
     -> String -- ^ string escogido.
     -> [[[Char]]] -- ^ lista de todas las palabras separadas.
-    -> [String] -- ^ lista de todas las palabras validas obtenidas.
-    -> [String] -- ^ return lista de todas las palabras validas obtenidas.
+    -> [[[Char]]] -- ^ lista de todas las palabras validas obtenidas.
+    -> [[[Char]]] -- ^ return lista de todas las palabras validas obtenidas.
 createListOfValidWords counter sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped currentList = do
     if counter < sizeOfEvaluationList
         then do
-            let validWords = getFilteredValidWords (allEvaluationStrings !! counter) chosenWord splitAllWordsDroped
+            let validWords = getFilteredValidWords (concat (allEvaluationStrings !! counter)) chosenWord splitAllWordsDroped
             let isValid = length validWords > 0  
             if isValid
                 then do
@@ -556,6 +564,8 @@ createListOfValidWords counter sizeOfEvaluationList allEvaluationStrings chosenW
                     createListOfValidWords (counter+1) sizeOfEvaluationList allEvaluationStrings chosenWord splitAllWordsDroped currentList
         else do
             currentList
+
+
 
 {-|
     Funcion encarga de inicializar el modo mente maestra del juego de
@@ -598,6 +608,52 @@ initMenteMaestra currentTurn randomWord = do
             putStrLn (revisar 0 lchar lrW [] [[]])
             initMenteMaestra (currentTurn + 1 ) randomWord
 
+crearArbol:: Int  -- ^ indice de la lista de palabras.
+    -> Int -- ^ tamaño de la lista de palabras.
+    -> [([[Char]],Float)] -- ^ lista de palabras con evaluacion.
+    -> [[Char]] -- ^ String de evaluacion separado.
+    -> [[[Char]]] -- ^ Lista de todas las palabras separadas.
+    -> [([[Char]],Float)] -- ^ lista contenedora.
+    -> IO() -- ^ Retorna lista de palabras con evaluacion.
+crearArbol indice sizeOfList firstLevel lchar splitAllWordsDroped  containerList = do
+    if indice < sizeOfList
+        then do
+            let x = firstLevel !! indice
+            let palabraElegida = concat (fst x)
+            
+            {-
+                Aqui si la lista de 10 palabras esta vacia, quiere decir que no hay ninguna palabra que cumpla con los requisitos
+                y por lo tanto el usuario esta haciendo trampa.
+            -}
+
+            let var = todasPosibilidades
+            let sizeEvals = length var
+            
+            let posibilidades = splitAllWords var 0 sizeEvals [[[]]]
+            let posibilidadesDropped = drop 1 posibilidades
+            let clear = limpiarEvalsT 0 sizeEvals lchar posibilidadesDropped []
+            let sizeClear = length clear
+    
+            let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeClear clear palabraElegida splitAllWordsDroped []
+            let sizeOfallPossiblesEvaluationStrings = length allPossiblesEvaluationStrings
+            -- Segundo nivel de una palabra
+
+            let currentEval = empezarEval  0 sizeOfallPossiblesEvaluationStrings allPossiblesEvaluationStrings []
+            print currentEval
+
+            print containerList
+            -- tercer nivel
+            
+            -- cuarto nivel
+            
+            
+            -- putStrLn "Salida de todos los posibles strings de evaluacion: "
+            -- print allPossiblesEvaluationStrings
+    
+    else 
+        print containerList
+
+
 {- |
     Funcion encarga de inicializar el modo descrifrador del juego de
     vacas y toros, se llama recursivamente hasta que el usuario ingrese
@@ -635,55 +691,67 @@ initDecifrador currentTurn randomWord listOfWords splitAllWordsDroped sizeOfList
         -- print splitedWords
         let filteredList = filterByToros listOfToros 0 sizeOfList  splitAllWordsDroped
         let filteredListVacas = filterByVacas listOfVacas 0 sizeOfListVacas filteredList
-
-        print (filteredListVacas)
        
         let tamañoPenultima = length filteredListVacas 
         let puntajesAntes = obtenerPuntajeTot 0 tamañoPenultima filteredListVacas []
         
         let ordenadas = sortOn snd puntajesAntes
        
+        -- Primer nivel con 10 o menos
         let tenWords = take 10 ordenadas
-        let firstWord = head tenWords
+        let sizeOfTenWords = length tenWords
+        -- Creamos el arbol
+        crearArbol 0 sizeOfTenWords tenWords lchar splitAllWordsDroped []
+        -- let createTree = crearArbol 0 sizeOfTenWords tenWords lchar splitAllWordsDroped []
         
-        --print (tenWords)
-
-        {-
-            Aqui si la lista de 10 palabras esta vacia, quiere decir que no hay ninguna palabra que cumpla con los requisitos
-            y por lo tanto el usuario esta haciendo trampa.
-        -}
-
-        -- let nivel1 = tenWords !! 0
-        -- let palabra1 = fst nivel1
-        -- --print (palabra1)
-        -- let sizeTenWords = length tenWords
-        -- let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
-        -- --print(listaSinCosto)
-        -- let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
-        -- let ver = contains palabra1 todas
-        -- --print (ver)
-        -- let ver2 = empezarEval lchar lrW 
-        --print(ver2)
-        --let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
-        --print (evaluationStrings)
-
-        let var = todasPosibilidades
-        let sizeEvals = length var
-        print  sizeEvals
         
-        let posibilidades = splitAllWords var 0 sizeEvals [[[]]]
-        let posibilidadesDropped = drop 1 posibilidades
-        let clear = limpiarEvalsT 0 sizeEvals lchar posibilidadesDropped []
-        print clear
-        --print var
-       -- let palabraElegida = concat (fst firstWord)
-       -- print palabraElegida
-       -- print(var !! 17)
-        --let filteredListVacas2 = getFilteredValidWords (var !! 17) (concat (fst firstWord)) splitAllWordsDroped
-        --print filteredListVacas2
-        --let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeEvals var palabraElegida splitAllWordsDroped []
-        --putStrLn "Salida de todos los posibles strings de evaluacion: "
-        --print allPossiblesEvaluationStrings
+        -- let firstWord = head tenWords
+        -- let palabraElegida = concat (fst firstWord)
+        -- putStrLn "La palabra primera de las 10 palabras  es: "
+        -- print palabraElegida
+        
+        -- --print (tenWords)
+
+        -- {-
+        --     Aqui si la lista de 10 palabras esta vacia, quiere decir que no hay ninguna palabra que cumpla con los requisitos
+        --     y por lo tanto el usuario esta haciendo trampa.
+        -- -}
+
+        -- -- let nivel1 = tenWords !! 0
+        -- -- let palabra1 = fst nivel1
+        -- -- print (palabra1)
+        -- -- let sizeTenWords = length tenWords
+        -- -- let listaSinCosto = listarSinCosto 0 sizeTenWords tenWords []
+        -- -- print(listaSinCosto)
+        -- -- let todas = eliminarPalabras 0 sizeSplitsAll listaSinCosto [] splitAllWordsDroped
+        -- -- let ver = contains palabra1 todas
+        -- -- print (ver)
+        -- -- let ver2 = empezarEval lchar lrW 
+        -- -- print(ver2)
+        -- -- let evaluationStrings = createEvaluationStringTV 0 ["-","-","-","-","-"] []
+        -- -- print (evaluationStrings) 
+
+        -- let var = todasPosibilidades
+        -- let sizeEvals = length var
+        -- print  sizeEvals
+        
+        -- let posibilidades = splitAllWords var 0 sizeEvals [[[]]]
+        -- let posibilidadesDropped = drop 1 posibilidades
+        -- let clear = limpiarEvalsT 0 sizeEvals lchar posibilidadesDropped []
+        -- let sizeClear = length clear
+        -- print ( concat  (clear !! 0))
+
+        -- let filteredListVacas2 = getFilteredValidWords (concat  (clear !! 0)) (concat (fst firstWord)) splitAllWordsDroped
+        -- print filteredListVacas2
+
+        -- let currentEval = empezarEval  0 sizeClear clear []
+        -- putStrLn "Evaluacion: "
+        -- print currentEval
+        -- -- let allPossiblesEvaluationStrings = createListOfValidWords 0 sizeClear clear palabraElegida splitAllWordsDroped []
+        -- -- putStrLn "Salida de todos los posibles strings de evaluacion: "
+        -- -- print allPossiblesEvaluationStrings
+
+        
         initDecifrador ( currentTurn + 1 ) randomWord listOfWords splitAllWordsDroped sizeOfListOfWords
 
 
